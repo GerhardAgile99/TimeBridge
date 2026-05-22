@@ -14,6 +14,8 @@ import {
   Zap,
   HelpCircle,
   Plug,
+  CalendarCheck,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/lib/user-context";
@@ -22,6 +24,8 @@ const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/activity", icon: Activity, label: "Activity" },
   { href: "/drafts", icon: Sparkles, label: "AI Drafts" },
+  { href: "/timesheets", icon: CalendarCheck, label: "Timesheets" },
+  { href: "/invoices", icon: Receipt, label: "Invoices" },
   { href: "/reports", icon: BarChart3, label: "Reports" },
   { href: "/projects", icon: FolderOpen, label: "Projects" },
   { href: "/team", icon: Users, label: "Team" },

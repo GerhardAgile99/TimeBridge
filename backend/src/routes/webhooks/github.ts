@@ -26,10 +26,13 @@ function normalizePayload(
     case "push": {
       const commits = (body.commits as any[]) ?? [];
       const branch = String(body.ref ?? "").replace("refs/heads/", "");
+      const headCommitPresent = !!(body as any).head_commit;
+      logger.debug("normalizePayload push", { commitsLen: commits.length, branch, headCommitPresent, ref: body.ref });
       // Drop branch-delete pushes (no head_commit and no commits)
-      if (commits.length === 0 && !(body as any).head_commit) return null;
+      if (commits.length === 0 && !headCommitPresent) return null;
       const headCommit = (body as any).head_commit;
       const allCommits = commits.length > 0 ? commits : (headCommit ? [headCommit] : []);
+      logger.debug("normalizePayload push accepted", { allCommitsLen: allCommits.length });
       return {
         event_type: "push",
         repository: (body.repository as any)?.full_name,
@@ -121,9 +124,18 @@ router.post("/", async (req: Request, res: Response) => {
   // Ack immediately — GitHub expects a fast response
   res.status(202).json({ message: "Accepted" });
 
-  const payload = normalizePayload(eventType, req.body as Record<string, unknown>);
+  const rawBody = req.body as Record<string, unknown>;
+  logger.debug("GitHub event received", {
+    eventType,
+    action: (rawBody as any)?.action,
+    ref: (rawBody as any)?.ref,
+    commitsCount: Array.isArray((rawBody as any)?.commits) ? (rawBody as any).commits.length : "n/a",
+    hasHeadCommit: !!(rawBody as any)?.head_commit,
+  });
+
+  const payload = normalizePayload(eventType, rawBody);
   if (!payload) {
-    logger.debug("GitHub event skipped", { eventType, action: (req.body as any)?.action });
+    logger.debug("GitHub event skipped", { eventType, action: (rawBody as any)?.action });
     return;
   }
 
