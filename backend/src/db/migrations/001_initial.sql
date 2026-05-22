@@ -112,21 +112,14 @@ CREATE TRIGGER drafts_updated_at
   BEFORE UPDATE ON drafts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- ─── Seed: demo user + projects ───────────────────────────────────────────────
+-- ─── Seed: default local user ─────────────────────────────────────────────────
 INSERT INTO users (id, email, name) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'jordan@flowtrack.ai', 'Jordan Davis');
-
-INSERT INTO projects (id, name, description, color) VALUES
-  ('10000000-0000-0000-0000-000000000001', 'Mobile App Redesign',  'iOS/Android redesign project',   '#6366F1'),
-  ('10000000-0000-0000-0000-000000000002', 'Customer Onboarding',  'New user onboarding flow',       '#8B5CF6'),
-  ('10000000-0000-0000-0000-000000000003', 'Internal AI Tooling',  'Internal AI utilities',          '#EC4899'),
-  ('10000000-0000-0000-0000-000000000004', 'API Gateway v2',       'API gateway rewrite',            '#F59E0B'),
-  ('10000000-0000-0000-0000-000000000005', 'Data Pipeline',        'Data ingestion pipeline',        '#10B981');
+  ('00000000-0000-0000-0000-000000000001', 'user@localhost', 'You');
 
 INSERT INTO agent_memory (user_id, key, value) VALUES
   ('00000000-0000-0000-0000-000000000001', 'context', '{
-    "active_projects": ["Mobile App Redesign", "Customer Onboarding", "Internal AI Tooling"],
-    "recent_tasks": ["Fix auth bug", "Deploy staging", "Code review"],
+    "active_projects": [],
+    "recent_tasks": [],
     "work_hours": "09:00-18:00",
     "timezone": "UTC"
   }');

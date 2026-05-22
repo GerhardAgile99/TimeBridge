@@ -71,16 +71,20 @@ Analyze this and return JSON only.`,
 }
 
 function mockAnalysis(event: RawEvent): WorkAnalysis {
-  const payload = event.payload as Record<string, string>;
+  const payload = event.payload as Record<string, unknown>;
   const isWork = event.source !== "other";
+  const description =
+    (payload["commits"] as any[])?.[0]?.message ??
+    String(payload["title"] ?? payload["text"] ?? "").slice(0, 80) ||
+    `${event.source} activity`;
   return {
     is_work: isWork,
-    project: "Mobile App Redesign",
-    task: payload["text"]?.slice(0, 80) ?? `${event.source} activity`,
+    project: null,
+    task: description,
     duration_minutes: 45,
     category: "Engineering",
-    summary: `Detected ${event.source} activity: ${payload["text"]?.slice(0, 60) ?? "work signal"}`,
-    confidence: 88,
-    reasoning: "Mock analysis — set ANTHROPIC_API_KEY for real AI classification",
+    summary: `Detected ${event.source} activity`,
+    confidence: 50,
+    reasoning: "No ANTHROPIC_API_KEY — add one for real AI classification",
   };
 }

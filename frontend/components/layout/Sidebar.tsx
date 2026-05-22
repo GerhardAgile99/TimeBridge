@@ -9,6 +9,7 @@ import {
   BarChart3,
   FolderOpen,
   Users,
+  UserRound,
   Settings,
   Zap,
   HelpCircle,
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/activity", icon: Activity, label: "Activity" },
-  { href: "/drafts", icon: Sparkles, label: "AI Drafts", badge: 7 },
+  { href: "/drafts", icon: Sparkles, label: "AI Drafts" },
   { href: "/reports", icon: BarChart3, label: "Reports" },
   { href: "/projects", icon: FolderOpen, label: "Projects" },
   { href: "/team", icon: Users, label: "Team" },
@@ -85,11 +86,11 @@ export function Sidebar() {
         <div className="p-3 border-t border-white/[0.06]">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-xs font-semibold text-white shrink-0">
-              JD
+              ME
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-[#F8FAFC] truncate">Jordan Davis</div>
-              <div className="text-xs text-[#94A3B8] truncate">jordan@flowtrack.ai</div>
+              <div className="text-sm font-medium text-[#F8FAFC] truncate">My Account</div>
+              <div className="text-xs text-[#94A3B8] truncate">Local workspace</div>
             </div>
           </div>
         </div>
