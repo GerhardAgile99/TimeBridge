@@ -77,9 +77,18 @@ function mockAnalysis(event: RawEvent): WorkAnalysis {
     ((payload["commits"] as any[])?.[0]?.message ??
     String(payload["title"] ?? payload["text"] ?? "").slice(0, 80)) ||
     `${event.source} activity`;
+
+  // Extract project name from source-specific payload fields
+  let project: string | null = null;
+  if (event.source === "github") {
+    const repo = String(payload["repository"] ?? "");
+    // Use the repo name part after the slash (e.g. "GerhardAgile99/TimeBridge" → "TimeBridge")
+    project = repo.includes("/") ? repo.split("/").pop() ?? null : repo || null;
+  }
+
   return {
     is_work: isWork,
-    project: null,
+    project,
     task: description,
     duration_minutes: 45,
     category: "Engineering",

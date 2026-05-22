@@ -2,6 +2,7 @@ import { projects as mockProjects } from "@/lib/mock-data";
 import { Users, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getProjects } from "@/lib/api/projects";
+import { getStats } from "@/lib/api/reports";
 import type { Project } from "@/lib/mock-data";
 
 const activityColors = {
@@ -14,17 +15,25 @@ const PROJECT_COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981", "
 
 async function loadProjects(): Promise<Project[]> {
   try {
-    const res = await getProjects();
-    if (res.data.length === 0) return mockProjects;
-    return res.data.map((p, i) => ({
-      id: p.id,
-      name: p.name,
-      totalHours: 0,
-      contributors: 1,
-      aiActivityLevel: "low" as const,
-      recentWork: p.description ?? "No recent activity",
-      color: p.color ?? PROJECT_COLORS[i % PROJECT_COLORS.length],
-    }));
+    const [projectsRes, statsRes] = await Promise.allSettled([getProjects(), getStats()]);
+    const apiProjects = projectsRes.status === "fulfilled" ? projectsRes.value.data : [];
+    if (apiProjects.length === 0) return mockProjects;
+
+    const breakdown = statsRes.status === "fulfilled" ? statsRes.value.project_breakdown : [];
+    const hoursMap = new Map(breakdown.map((b) => [b.project_id, b.total_minutes / 60]));
+
+    return apiProjects.map((p, i) => {
+      const hrs = hoursMap.get(p.id) ?? 0;
+      return {
+        id: p.id,
+        name: p.name,
+        totalHours: Math.round(hrs * 10) / 10,
+        contributors: 1,
+        aiActivityLevel: hrs >= 4 ? ("high" as const) : hrs >= 1 ? ("medium" as const) : ("low" as const),
+        recentWork: p.description ?? "No recent activity",
+        color: p.color ?? PROJECT_COLORS[i % PROJECT_COLORS.length],
+      };
+    });
   } catch {
     return mockProjects;
   }
