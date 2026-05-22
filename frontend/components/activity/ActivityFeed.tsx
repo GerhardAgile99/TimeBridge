@@ -49,6 +49,11 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
                 {activity.summary}
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">{activity.timeAgo}</p>
+              {activity.draftTask && (
+                <p className="text-xs font-bold text-emerald-400 mt-1 truncate">
+                  ↳ {activity.draftTask}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">

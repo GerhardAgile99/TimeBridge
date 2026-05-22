@@ -1,6 +1,7 @@
 import { ActivityFeed } from "@/components/activity/ActivityFeed";
 import { activities as mockActivities } from "@/lib/mock-data";
 import { getEvents } from "@/lib/api/events";
+import { getDrafts } from "@/lib/api/drafts";
 import { timeAgo } from "@/lib/utils/time";
 import type { Activity, ActivitySource } from "@/lib/mock-data";
 
@@ -20,9 +21,28 @@ function extractText(source: string, payload: Record<string, unknown>): string {
 
 async function loadActivities(): Promise<Activity[]> {
   try {
-    const res = await getEvents(50);
-    if (res.data.length === 0) return mockActivities;
-    return res.data.map((e) => {
+    const [eventsRes, pendingRes, approvedRes] = await Promise.allSettled([
+      getEvents(50),
+      getDrafts("pending"),
+      getDrafts("approved"),
+    ]);
+
+    const events = eventsRes.status === "fulfilled" ? eventsRes.value.data : [];
+    if (events.length === 0) return mockActivities;
+
+    // Build map: raw_event_id → draft task
+    const eventDraftMap = new Map<string, string>();
+    for (const res of [pendingRes, approvedRes]) {
+      if (res.status === "fulfilled") {
+        for (const draft of res.value.data) {
+          for (const eid of draft.raw_event_ids ?? []) {
+            eventDraftMap.set(eid, draft.task);
+          }
+        }
+      }
+    }
+
+    return events.map((e) => {
       const src = VALID_SOURCES.includes(e.source as ActivitySource)
         ? (e.source as ActivitySource)
         : ("slack" as ActivitySource);
@@ -34,6 +54,7 @@ async function loadActivities(): Promise<Activity[]> {
         title: `${label} — ${text.slice(0, 80)}`,
         summary: text.slice(0, 120),
         timeAgo: timeAgo(e.created_at),
+        draftTask: eventDraftMap.get(e.id),
       };
     });
   } catch {

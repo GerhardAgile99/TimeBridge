@@ -6,6 +6,7 @@ export interface Activity {
   title: string;
   summary: string;
   timeAgo: string;
+  draftTask?: string;
 }
 
 export interface Draft {
