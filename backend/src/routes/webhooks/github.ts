@@ -25,13 +25,17 @@ function normalizePayload(
   switch (eventType) {
     case "push": {
       const commits = (body.commits as any[]) ?? [];
-      if (commits.length === 0) return null;
+      const branch = String(body.ref ?? "").replace("refs/heads/", "");
+      // Drop branch-delete pushes (no head_commit and no commits)
+      if (commits.length === 0 && !(body as any).head_commit) return null;
+      const headCommit = (body as any).head_commit;
+      const allCommits = commits.length > 0 ? commits : (headCommit ? [headCommit] : []);
       return {
         event_type: "push",
         repository: (body.repository as any)?.full_name,
-        branch: String(body.ref ?? "").replace("refs/heads/", ""),
+        branch,
         pusher: (body.pusher as any)?.name,
-        commits: commits.map((c: any) => ({
+        commits: allCommits.map((c: any) => ({
           id: c.id,
           message: c.message,
           author: c.author?.name,
