@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { WorkLogRepository } from "../repositories/WorkLogRepository";
 import { DraftRepository } from "../repositories/DraftRepository";
+import { db } from "../db/client";
 
 const router = Router();
 const workLogRepo = new WorkLogRepository();
@@ -10,15 +11,32 @@ const draftRepo = new DraftRepository();
 router.get("/stats", async (req: Request, res: Response) => {
   const userId = (req.query["user_id"] as string) ?? "00000000-0000-0000-0000-000000000001";
 
-  const [totalMinutes, pendingDrafts, projectStats] = await Promise.all([
-    workLogRepo.totalMinutesThisWeek(userId),
-    draftRepo.countPending(userId),
-    workLogRepo.statsByProject(userId),
-  ]);
+  const [totalMinutes, pendingDrafts, projectStats, projectCount, todayDrafts, eventsToday] =
+    await Promise.all([
+      workLogRepo.totalMinutesThisWeek(userId),
+      draftRepo.countPending(userId),
+      workLogRepo.statsByProject(userId),
+      db.query("SELECT COUNT(*) FROM projects").then((r) => parseInt(r.rows[0].count, 10)),
+      db.query(
+        `SELECT COALESCE(SUM(duration_minutes), 0)::int AS minutes,
+                COALESCE(ROUND(AVG(confidence::numeric), 0), 0)::int AS avg_confidence
+         FROM drafts
+         WHERE user_id = $1 AND created_at::date = CURRENT_DATE`,
+        [userId]
+      ).then((r) => r.rows[0] as { minutes: number; avg_confidence: number }),
+      db.query(
+        "SELECT COUNT(*)::int AS count FROM raw_events WHERE user_id = $1 AND created_at::date = CURRENT_DATE",
+        [userId]
+      ).then((r) => (r.rows[0] as { count: number }).count),
+    ]);
 
   res.json({
     hours_logged_this_week: Math.round((totalMinutes / 60) * 10) / 10,
     pending_drafts: pendingDrafts,
+    active_projects: projectCount,
+    today_detected_minutes: todayDrafts.minutes,
+    today_avg_confidence: todayDrafts.avg_confidence,
+    events_today: eventsToday,
     project_breakdown: projectStats,
   });
 });

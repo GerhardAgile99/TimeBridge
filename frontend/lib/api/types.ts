@@ -36,6 +36,10 @@ export interface ApiRawEvent {
 export interface ApiStats {
   hours_logged_this_week: number;
   pending_drafts: number;
+  active_projects: number;
+  today_detected_minutes: number;
+  today_avg_confidence: number;
+  events_today: number;
   project_breakdown: Array<{
     project_id: string;
     project_name: string;

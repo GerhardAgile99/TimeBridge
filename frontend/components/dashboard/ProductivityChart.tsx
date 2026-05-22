@@ -10,8 +10,8 @@ import {
 } from "recharts";
 
 interface ChartDataPoint {
-  month: string;
-  value: number;
+  day: string;
+  hours: number;
 }
 
 interface TooltipProps {
@@ -25,7 +25,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
     return (
       <div className="bg-[#1E293B] border border-white/10 rounded-lg px-3 py-2 text-sm shadow-xl">
         <p className="text-[#94A3B8]">{label}</p>
-        <p className="text-[#F8FAFC] font-semibold">{payload[0].value.toLocaleString()} mins</p>
+        <p className="text-[#F8FAFC] font-semibold">{payload[0].value} hrs</p>
       </div>
     );
   }
@@ -40,7 +40,7 @@ export function ProductivityChart({ data }: { data: ChartDataPoint[] }) {
           Productivity Trend
         </h3>
         <span className="text-xs text-[#94A3B8] bg-white/[0.04] px-3 py-1 rounded-full">
-          Last 13 months
+          This Week
         </span>
       </div>
       <ResponsiveContainer width="100%" height={200}>
@@ -52,7 +52,7 @@ export function ProductivityChart({ data }: { data: ChartDataPoint[] }) {
             </linearGradient>
           </defs>
           <XAxis
-            dataKey="month"
+            dataKey="day"
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#94A3B8", fontSize: 11 }}
@@ -62,7 +62,7 @@ export function ProductivityChart({ data }: { data: ChartDataPoint[] }) {
           <Tooltip content={<CustomTooltip />} />
           <Area
             type="monotone"
-            dataKey="value"
+            dataKey="hours"
             stroke="#6366F1"
             strokeWidth={2.5}
             fill="url(#colorValue)"

@@ -9,7 +9,21 @@ const waveHeights = [
   90, 25, 65, 50,
 ];
 
-export function AIHeroCard() {
+function formatMinutes(mins: number): string {
+  if (mins === 0) return "0m";
+  if (mins < 60) return `${mins}m`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+
+interface AIHeroCardProps {
+  detectedMinutes: number;
+  avgConfidence: number | null;
+}
+
+export function AIHeroCard({ detectedMinutes, avgConfidence }: AIHeroCardProps) {
+  const confidenceLabel = avgConfidence != null ? `${avgConfidence}% confidence` : "no data yet";
   return (
     <div className="relative rounded-2xl overflow-hidden p-6 bg-gradient-to-r from-[#4338CA] via-[#5B5BD6] to-[#7C3AED]">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.3),transparent_60%)]" />
@@ -20,12 +34,12 @@ export function AIHeroCard() {
         <div className="shrink-0">
           <p className="text-indigo-200 text-sm font-medium mb-1">AI detected</p>
           <h2 className="text-5xl font-bold text-white tracking-tight leading-none">
-            6h 42m
+            {formatMinutes(detectedMinutes)}
           </h2>
           <p className="text-indigo-200 text-sm mt-2 flex items-center gap-2">
             of productive work today
             <span className="inline-flex items-center bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-              92% confidence
+              {confidenceLabel}
             </span>
           </p>
         </div>
