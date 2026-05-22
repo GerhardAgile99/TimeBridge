@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:\\\\TimeBridge\" -ErrorAction SilentlyContinue; if \\(-not \\(Test-Path \"C:\\\\TimeBridge\"\\)\\) { Write-Host \"Directory does not exist\" })",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-git)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(python3 -c \"import sys, json; data = sys.stdin.read\\(\\); start = data.find\\('\\\\\"message\\\\\"'\\); print\\(data[start:start+400]\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)"
+    ]
+  }
+}

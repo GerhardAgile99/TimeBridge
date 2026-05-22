@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Logs
+*.log
+backend/server.log
+backend/worker.log
+backend/tunnel.log
+backend/webhook-forwarder.log
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+.vercel
