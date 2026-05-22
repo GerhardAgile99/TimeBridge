@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "worker": "ts-node-dev --respawn --transpile-only src/queues/workers/eventWorker.ts",
+    "mcp": "ts-node --transpile-only src/mcp/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -15,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "bullmq": "^5.76.10",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
