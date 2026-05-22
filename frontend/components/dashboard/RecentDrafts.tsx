@@ -61,7 +61,7 @@ export function RecentDrafts({ drafts }: { drafts: ApiDraft[] }) {
                   </div>
                 );
               })}
-              <span className="text-xs font-bold text-emerald-400">{draft.confidence_score}%</span>
+              <span className="text-xs font-bold text-emerald-400">{Math.round(parseFloat(String(draft.confidence)))}%</span>
             </div>
           </div>
         ))}

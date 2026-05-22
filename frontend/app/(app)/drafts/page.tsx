@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { DraftCard, DraftCardData } from "@/components/drafts/DraftCard";
 import { drafts as mockDrafts } from "@/lib/mock-data";
-import { getDrafts, approveDraft, rejectDraft, approveAllDrafts } from "@/lib/api/drafts";
+import { getDrafts, approveDraft, rejectDraft, approveAllDrafts, updateDraft } from "@/lib/api/drafts";
 import { minutesToDuration } from "@/lib/utils/time";
 import { Search, Filter, CheckCheck } from "lucide-react";
 
@@ -14,7 +14,8 @@ function toCardData(d: import("@/lib/api/types").ApiDraft): DraftCardData {
     project: d.metadata?.project_name as string ?? "Work",
     task: d.task,
     duration: minutesToDuration(d.duration_minutes),
-    confidence: d.confidence_score,
+    duration_minutes: d.duration_minutes,
+    confidence: Math.round(parseFloat(String(d.confidence))),
     sources: d.sources ?? [],
     status: d.status,
   };
@@ -25,6 +26,7 @@ const mockCardDrafts: DraftCardData[] = mockDrafts.map((d) => ({
   project: d.project,
   task: d.task,
   duration: d.duration,
+  duration_minutes: 45,
   confidence: d.confidence,
   sources: d.sources,
   status: d.status,
@@ -59,6 +61,17 @@ export default function DraftsPage() {
   const handleReject = async (id: string) => {
     if (isLive) await rejectDraft(id);
     setDrafts((prev) => prev.filter((d) => d.id !== id));
+  };
+
+  const handleEdit = async (id: string, changes: { task: string; duration_minutes: number }) => {
+    if (isLive) await updateDraft(id, changes);
+    setDrafts((prev) =>
+      prev.map((d) =>
+        d.id === id
+          ? { ...d, task: changes.task, duration_minutes: changes.duration_minutes, duration: minutesToDuration(changes.duration_minutes) }
+          : d
+      )
+    );
   };
 
   const handleApproveAll = async () => {
@@ -126,6 +139,7 @@ export default function DraftsPage() {
                 index={i}
                 onApprove={handleApprove}
                 onReject={handleReject}
+                onEdit={handleEdit}
               />
             ))}
           </AnimatePresence>

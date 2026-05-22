@@ -17,3 +17,13 @@ export async function rejectDraft(id: string): Promise<ApiDraft> {
 export async function approveAllDrafts(): Promise<{ approved: number }> {
   return apiFetch<{ approved: number }>("/drafts/approve-all", { method: "POST" });
 }
+
+export async function updateDraft(
+  id: string,
+  body: { task?: string; duration_minutes?: number; notes?: string }
+): Promise<ApiDraft> {
+  return apiFetch<ApiDraft>(`/drafts/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}

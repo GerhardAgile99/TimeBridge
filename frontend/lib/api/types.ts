@@ -11,14 +11,14 @@ export interface ApiDraft {
   id: string;
   user_id: string;
   project_id: string | null;
-  raw_event_id: string | null;
+  raw_event_ids: string[];
   task: string;
   duration_minutes: number;
   notes: string | null;
-  confidence_score: number;
+  confidence: string | number; // Postgres NUMERIC returns as string
   status: "pending" | "approved" | "rejected";
   sources: string[];
-  metadata: Record<string, unknown> | null;
+  ai_reasoning: string | null;
   created_at: string;
   updated_at: string;
 }
