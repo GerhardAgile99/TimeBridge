@@ -40,7 +40,7 @@ router.post("/", async (req: Request, res: Response) => {
 
   res.status(202).json({
     message: "Event accepted",
-    event_id: event.id,
+    id: event.id,
     job_id: jobId,
   });
 });
