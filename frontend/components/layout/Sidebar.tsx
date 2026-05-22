@@ -16,6 +16,7 @@ import {
   Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/lib/user-context";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -30,6 +31,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, initials } = useUser();
 
   return (
     <aside className="flex flex-col w-[240px] h-screen bg-[#0B1120] border-r border-white/[0.06] shrink-0">
@@ -86,10 +88,10 @@ export function Sidebar() {
         <div className="p-3 border-t border-white/[0.06]">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-xs font-semibold text-white shrink-0">
-              ME
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-[#F8FAFC] truncate">My Account</div>
+              <div className="text-sm font-medium text-[#F8FAFC] truncate">{user?.name}</div>
               <div className="text-xs text-[#94A3B8] truncate">Local workspace</div>
             </div>
           </div>

@@ -1,11 +1,13 @@
 "use client";
 
-import { Search, Bell, Settings, UserRound } from "lucide-react";
+import { Search, Bell, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { checkHealth } from "@/lib/api/client";
+import { useUser } from "@/lib/user-context";
 
 export function Topbar() {
   const [isLive, setIsLive] = useState<boolean | null>(null);
+  const { initials } = useUser();
 
   useEffect(() => {
     const check = async () => {
@@ -53,8 +55,8 @@ export function Topbar() {
           <Bell className="w-4 h-4 text-[#94A3B8]" />
           <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#6366F1] rounded-full" />
         </button>
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white cursor-pointer ml-1">
-          <UserRound className="w-4 h-4" />
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-xs font-semibold text-white cursor-pointer ml-1">
+          {initials}
         </div>
       </div>
     </header>
