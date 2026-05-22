@@ -50,9 +50,16 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">{activity.timeAgo}</p>
               {activity.draftTask && (
-                <p className="text-xs font-bold text-emerald-400 mt-1 truncate">
-                  ↳ {activity.draftTask}
-                </p>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <p className="text-xs font-bold text-emerald-400 truncate">
+                    ↳ {activity.draftTask}
+                  </p>
+                  {activity.draftDuration && (
+                    <span className="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-400/10 px-2 py-0.5 rounded-md">
+                      {activity.draftDuration}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 

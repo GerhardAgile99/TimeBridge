@@ -7,6 +7,7 @@ export interface Activity {
   summary: string;
   timeAgo: string;
   draftTask?: string;
+  draftDuration?: string;
 }
 
 export interface Draft {

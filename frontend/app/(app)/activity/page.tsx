@@ -2,7 +2,7 @@ import { ActivityFeed } from "@/components/activity/ActivityFeed";
 import { activities as mockActivities } from "@/lib/mock-data";
 import { getEvents } from "@/lib/api/events";
 import { getDrafts } from "@/lib/api/drafts";
-import { timeAgo } from "@/lib/utils/time";
+import { timeAgo, minutesToDuration } from "@/lib/utils/time";
 import type { Activity, ActivitySource } from "@/lib/mock-data";
 
 const VALID_SOURCES: ActivitySource[] = ["slack", "github", "jira", "calendar"];
@@ -30,13 +30,16 @@ async function loadActivities(): Promise<Activity[]> {
     const events = eventsRes.status === "fulfilled" ? eventsRes.value.data : [];
     if (events.length === 0) return mockActivities;
 
-    // Build map: raw_event_id → draft task
-    const eventDraftMap = new Map<string, string>();
+    // Build map: raw_event_id → { task, duration }
+    const eventDraftMap = new Map<string, { task: string; duration: string }>();
     for (const res of [pendingRes, approvedRes]) {
       if (res.status === "fulfilled") {
         for (const draft of res.value.data) {
           for (const eid of draft.raw_event_ids ?? []) {
-            eventDraftMap.set(eid, draft.task);
+            eventDraftMap.set(eid, {
+              task: draft.task,
+              duration: minutesToDuration(draft.duration_minutes),
+            });
           }
         }
       }
@@ -54,7 +57,8 @@ async function loadActivities(): Promise<Activity[]> {
         title: `${label} — ${text.slice(0, 80)}`,
         summary: text.slice(0, 120),
         timeAgo: timeAgo(e.created_at),
-        draftTask: eventDraftMap.get(e.id),
+        draftTask: eventDraftMap.get(e.id)?.task,
+        draftDuration: eventDraftMap.get(e.id)?.duration,
       };
     });
   } catch {
