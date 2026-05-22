@@ -74,8 +74,8 @@ function mockAnalysis(event: RawEvent): WorkAnalysis {
   const payload = event.payload as Record<string, unknown>;
   const isWork = event.source !== "other";
   const description =
-    (payload["commits"] as any[])?.[0]?.message ??
-    String(payload["title"] ?? payload["text"] ?? "").slice(0, 80) ||
+    ((payload["commits"] as any[])?.[0]?.message ??
+    String(payload["title"] ?? payload["text"] ?? "").slice(0, 80)) ||
     `${event.source} activity`;
   return {
     is_work: isWork,

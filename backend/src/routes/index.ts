@@ -5,9 +5,11 @@ import worklogsRouter from "./worklogs";
 import projectsRouter from "./projects";
 import reportsRouter from "./reports";
 import githubWebhookRouter from "./webhooks/github";
+import usersRouter from "./users";
 
 const router = Router();
 
+router.use("/users", usersRouter);
 router.use("/events", eventsRouter);
 router.use("/drafts", draftsRouter);
 router.use("/worklogs", worklogsRouter);

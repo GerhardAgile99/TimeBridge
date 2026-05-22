@@ -6,6 +6,18 @@ import type { Activity, ActivitySource } from "@/lib/mock-data";
 
 const VALID_SOURCES: ActivitySource[] = ["slack", "github", "jira", "calendar"];
 
+function extractText(source: string, payload: Record<string, unknown>): string {
+  const p = payload as Record<string, any>;
+  if (source === "github") {
+    const commits = p.commits as any[] | undefined;
+    if (commits?.length) return `Pushed "${commits[0].message}" to ${p.branch ?? "branch"}`;
+    if (p.title) return `PR ${p.action ?? ""}: "${p.title}"`.trim();
+    if (p.pr_title) return `Reviewed PR: "${p.pr_title}" (${p.state ?? ""})`.trim();
+    if (p.event_type === "branch_created") return `Created branch: ${p.branch}`;
+  }
+  return String(p?.text ?? p?.title ?? p?.summary ?? p?.event_type ?? "Event detected");
+}
+
 async function loadActivities(): Promise<Activity[]> {
   try {
     const res = await getEvents(50);
@@ -14,11 +26,12 @@ async function loadActivities(): Promise<Activity[]> {
       const src = VALID_SOURCES.includes(e.source as ActivitySource)
         ? (e.source as ActivitySource)
         : ("slack" as ActivitySource);
-      const text = String(e.payload?.text ?? e.payload?.title ?? e.payload?.summary ?? "Event detected");
+      const text = extractText(e.source, e.payload ?? {});
+      const label = src.charAt(0).toUpperCase() + src.slice(1);
       return {
         id: e.id,
         source: src,
-        title: `${src.charAt(0).toUpperCase() + src.slice(1)} — ${text.slice(0, 80)}`,
+        title: `${label} — ${text.slice(0, 80)}`,
         summary: text.slice(0, 120),
         timeAgo: timeAgo(e.created_at),
       };
